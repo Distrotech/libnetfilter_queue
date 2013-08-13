@@ -2,6 +2,8 @@
 #define INTERNAL_H 1
 
 #include "config.h"
+#include <stdint.h>
+#include <stdbool.h>
 #ifdef HAVE_VISIBILITY_HIDDEN
 #	define __visible	__attribute__((visibility("default")))
 #	define EXPORT_SYMBOL(x)	typeof(x) (x) __visible

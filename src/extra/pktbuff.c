@@ -84,6 +84,7 @@ pktb_alloc(int family, void *data, size_t len, size_t extra)
 	}
 	return pktb;
 }
+EXPORT_SYMBOL(pktb_alloc);
 
 /**
  * pktb_data - return pointer to the beginning of the packet buffer
@@ -93,6 +94,7 @@ uint8_t *pktb_data(struct pkt_buff *pktb)
 {
 	return pktb->data;
 }
+EXPORT_SYMBOL(pktb_data);
 
 /**
  * pktb_len - return length of the packet buffer
@@ -102,6 +104,7 @@ uint32_t pktb_len(struct pkt_buff *pktb)
 {
 	return pktb->len;
 }
+EXPORT_SYMBOL(pktb_len);
 
 /**
  * pktb_free - release packet buffer
@@ -111,6 +114,7 @@ void pktb_free(struct pkt_buff *pktb)
 {
 	free(pktb);
 }
+EXPORT_SYMBOL(pktb_free);
 
 /**
  * pktb_push - update pointer to the beginning of the packet buffer
@@ -121,6 +125,7 @@ void pktb_push(struct pkt_buff *pktb, unsigned int len)
 	pktb->data -= len;
 	pktb->len += len;
 }
+EXPORT_SYMBOL(pktb_push);
 
 /**
  * pktb_pull - update pointer to the beginning of the packet buffer
@@ -131,6 +136,7 @@ void pktb_pull(struct pkt_buff *pktb, unsigned int len)
 	pktb->data += len;
 	pktb->len -= len;
 }
+EXPORT_SYMBOL(pktb_pull);
 
 /**
  * pktb_put - add extra bytes to the tail of the packet buffer
@@ -141,6 +147,7 @@ void pktb_put(struct pkt_buff *pktb, unsigned int len)
 	pktb->tail += len;
 	pktb->len += len;
 }
+EXPORT_SYMBOL(pktb_put);
 
 /**
  * pktb_trim - set new length for this packet buffer
@@ -150,6 +157,7 @@ void pktb_trim(struct pkt_buff *pktb, unsigned int len)
 {
 	pktb->len = len;
 }
+EXPORT_SYMBOL(pktb_trim);
 
 /**
  * pktb_tailroom - get room in bytes in the tail of the packet buffer
@@ -159,6 +167,7 @@ unsigned int pktb_tailroom(struct pkt_buff *pktb)
 {
 	return pktb->data_len - pktb->len;
 }
+EXPORT_SYMBOL(pktb_tailroom);
 
 /**
  * pktb_mac_header - return pointer to layer 2 header (if any)
@@ -168,6 +177,7 @@ uint8_t *pktb_mac_header(struct pkt_buff *pktb)
 {
 	return pktb->mac_header;
 }
+EXPORT_SYMBOL(pktb_mac_header);
 
 /**
  * pktb_network_header - return pointer to layer 3 header
@@ -177,6 +187,7 @@ uint8_t *pktb_network_header(struct pkt_buff *pktb)
 {
 	return pktb->network_header;
 }
+EXPORT_SYMBOL(pktb_network_header);
 
 /**
  * pktb_transport_header - return pointer to layer 4 header (if any)
@@ -186,6 +197,7 @@ uint8_t *pktb_transport_header(struct pkt_buff *pktb)
 {
 	return pktb->transport_header;
 }
+EXPORT_SYMBOL(pktb_transport_header);
 
 static int pktb_expand_tail(struct pkt_buff *pkt, int extra)
 {

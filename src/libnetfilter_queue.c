@@ -32,6 +32,7 @@
 
 #include <libnfnetlink/libnfnetlink.h>
 #include <libnetfilter_queue/libnetfilter_queue.h>
+#include "src/internal.h"
 
 /**
  * \mainpage
@@ -133,6 +134,7 @@ struct nfq_data {
 };
 
 int nfq_errno;
+EXPORT_SYMBOL(nfq_errno);
 
 /***********************************************************************
  * low level stuff 
@@ -225,6 +227,7 @@ struct nfnl_handle *nfq_nfnlh(struct nfq_handle *h)
 {
 	return h->nfnlh;
 }
+EXPORT_SYMBOL(nfq_nfnlh);
 
 /**
  *
@@ -300,7 +303,7 @@ int nfq_fd(struct nfq_handle *h)
 {
 	return nfnl_fd(nfq_nfnlh(h));
 }
-
+EXPORT_SYMBOL(nfq_fd);
 /**
  * @}
  */
@@ -368,6 +371,7 @@ struct nfq_handle *nfq_open(void)
 
 	return qh;
 }
+EXPORT_SYMBOL(nfq_open);
 
 /**
  * @}
@@ -416,6 +420,7 @@ out_free:
 	free(h);
 	return NULL;
 }
+EXPORT_SYMBOL(nfq_open_nfnl);
 
 /**
  * \addtogroup LibrarySetup
@@ -443,6 +448,7 @@ int nfq_close(struct nfq_handle *h)
 		free(h);
 	return ret;
 }
+EXPORT_SYMBOL(nfq_close);
 
 /**
  * nfq_bind_pf - bind a nfqueue handler to a given protocol family
@@ -458,6 +464,7 @@ int nfq_bind_pf(struct nfq_handle *h, u_int16_t pf)
 {
 	return __build_send_cfg_msg(h, NFQNL_CFG_CMD_PF_BIND, 0, pf);
 }
+EXPORT_SYMBOL(nfq_bind_pf);
 
 /**
  * nfq_unbind_pf - unbind nfqueue handler from a protocol family
@@ -471,7 +478,7 @@ int nfq_unbind_pf(struct nfq_handle *h, u_int16_t pf)
 {
 	return __build_send_cfg_msg(h, NFQNL_CFG_CMD_PF_UNBIND, 0, pf);
 }
-
+EXPORT_SYMBOL(nfq_unbind_pf);
 
 
 /**
@@ -544,6 +551,7 @@ struct nfq_q_handle *nfq_create_queue(struct nfq_handle *h,
 	add_qh(qh);
 	return qh;
 }
+EXPORT_SYMBOL(nfq_create_queue);
 
 /**
  * @}
@@ -571,6 +579,7 @@ int nfq_destroy_queue(struct nfq_q_handle *qh)
 
 	return ret;
 }
+EXPORT_SYMBOL(nfq_destroy_queue);
 
 /**
  * nfq_handle_packet - handle a packet received from the nfqueue subsystem
@@ -588,6 +597,7 @@ int nfq_handle_packet(struct nfq_handle *h, char *buf, int len)
 {
 	return nfnl_handle_packet(h->nfnlh, buf, len);
 }
+EXPORT_SYMBOL(nfq_handle_packet);
 
 /**
  * nfq_set_mode - set the amount of packet data that nfqueue copies to userspace
@@ -624,6 +634,7 @@ int nfq_set_mode(struct nfq_q_handle *qh,
 
 	return nfnl_query(qh->h->nfnlh, &u.nmh);
 }
+EXPORT_SYMBOL(nfq_set_mode);
 
 /**
  * nfq_set_queue_flags - set flags (options) for the kernel queue
@@ -693,6 +704,7 @@ int nfq_set_queue_flags(struct nfq_q_handle *qh,
 
 	return nfnl_query(qh->h->nfnlh, &u.nmh);
 }
+EXPORT_SYMBOL(nfq_set_queue_flags);
 
 /**
  * nfq_set_queue_maxlen - Set kernel queue maximum length parameter
@@ -723,6 +735,7 @@ int nfq_set_queue_maxlen(struct nfq_q_handle *qh,
 
 	return nfnl_query(qh->h->nfnlh, &u.nmh);
 }
+EXPORT_SYMBOL(nfq_set_queue_maxlen);
 
 /**
  * @}
@@ -815,7 +828,8 @@ int nfq_set_verdict(struct nfq_q_handle *qh, u_int32_t id,
 {
 	return __set_verdict(qh, id, verdict, 0, 0, data_len, buf,
 						NFQNL_MSG_VERDICT);
-}	
+}
+EXPORT_SYMBOL(nfq_set_verdict);
 
 /**
  * nfq_set_verdict2 - like nfq_set_verdict, but you can set the mark.
@@ -833,6 +847,7 @@ int nfq_set_verdict2(struct nfq_q_handle *qh, u_int32_t id,
 	return __set_verdict(qh, id, verdict, htonl(mark), 1, data_len,
 						buf, NFQNL_MSG_VERDICT);
 }
+EXPORT_SYMBOL(nfq_set_verdict2);
 
 /**
  * nfq_set_verdict_batch - issue verdicts on several packets at once
@@ -852,6 +867,7 @@ int nfq_set_verdict_batch(struct nfq_q_handle *qh, u_int32_t id,
 	return __set_verdict(qh, id, verdict, 0, 0, 0, NULL,
 					NFQNL_MSG_VERDICT_BATCH);
 }
+EXPORT_SYMBOL(nfq_set_verdict_batch);
 
 /**
  * nfq_set_verdict_batch2 - like nfq_set_verdict_batch, but you can set a mark.
@@ -866,6 +882,7 @@ int nfq_set_verdict_batch2(struct nfq_q_handle *qh, u_int32_t id,
 	return __set_verdict(qh, id, verdict, htonl(mark), 1, 0,
 				NULL, NFQNL_MSG_VERDICT_BATCH);
 }
+EXPORT_SYMBOL(nfq_set_verdict_batch2);
 
 /**
  * nfq_set_verdict_mark - like nfq_set_verdict, but you can set the mark.
@@ -888,6 +905,7 @@ int nfq_set_verdict_mark(struct nfq_q_handle *qh, u_int32_t id,
 	return __set_verdict(qh, id, verdict, mark, 1, data_len, buf,
 						NFQNL_MSG_VERDICT);
 }
+EXPORT_SYMBOL(nfq_set_verdict_mark);
 
 /**
  * @}
@@ -927,6 +945,7 @@ struct nfqnl_msg_packet_hdr *nfq_get_msg_packet_hdr(struct nfq_data *nfad)
 	return nfnl_get_pointer_to_data(nfad->data, NFQA_PACKET_HDR,
 					struct nfqnl_msg_packet_hdr);
 }
+EXPORT_SYMBOL(nfq_get_msg_packet_hdr);
 
 /**
  * nfq_get_nfmark - get the packet mark
@@ -938,6 +957,7 @@ uint32_t nfq_get_nfmark(struct nfq_data *nfad)
 {
 	return ntohl(nfnl_get_data(nfad->data, NFQA_MARK, u_int32_t));
 }
+EXPORT_SYMBOL(nfq_get_nfmark);
 
 /**
  * nfq_get_timestamp - get the packet timestamp
@@ -961,6 +981,7 @@ int nfq_get_timestamp(struct nfq_data *nfad, struct timeval *tv)
 
 	return 0;
 }
+EXPORT_SYMBOL(nfq_get_timestamp);
 
 /**
  * nfq_get_indev - get the interface that the packet was received through
@@ -977,6 +998,7 @@ u_int32_t nfq_get_indev(struct nfq_data *nfad)
 {
 	return ntohl(nfnl_get_data(nfad->data, NFQA_IFINDEX_INDEV, u_int32_t));
 }
+EXPORT_SYMBOL(nfq_get_indev);
 
 /**
  * nfq_get_physindev - get the physical interface that the packet was received
@@ -990,6 +1012,7 @@ u_int32_t nfq_get_physindev(struct nfq_data *nfad)
 {
 	return ntohl(nfnl_get_data(nfad->data, NFQA_IFINDEX_PHYSINDEV, u_int32_t));
 }
+EXPORT_SYMBOL(nfq_get_physindev);
 
 /**
  * nfq_get_outdev - gets the interface that the packet will be routed out
@@ -1003,6 +1026,7 @@ u_int32_t nfq_get_outdev(struct nfq_data *nfad)
 {
 	return ntohl(nfnl_get_data(nfad->data, NFQA_IFINDEX_OUTDEV, u_int32_t));
 }
+EXPORT_SYMBOL(nfq_get_outdev);
 
 /**
  * nfq_get_physoutdev - get the physical interface that the packet output
@@ -1018,6 +1042,7 @@ u_int32_t nfq_get_physoutdev(struct nfq_data *nfad)
 {
 	return ntohl(nfnl_get_data(nfad->data, NFQA_IFINDEX_PHYSOUTDEV, u_int32_t));
 }
+EXPORT_SYMBOL(nfq_get_physoutdev);
 
 /**
  * nfq_get_indev_name - get the name of the interface the packet
@@ -1063,6 +1088,7 @@ int nfq_get_indev_name(struct nlif_handle *nlif_handle,
 	u_int32_t ifindex = nfq_get_indev(nfad);
 	return nlif_index2name(nlif_handle, ifindex, name);
 }
+EXPORT_SYMBOL(nfq_get_indev_name);
 
 /**
  * nfq_get_physindev_name - get the name of the physical interface the
@@ -1082,6 +1108,7 @@ int nfq_get_physindev_name(struct nlif_handle *nlif_handle,
 	u_int32_t ifindex = nfq_get_physindev(nfad);
 	return nlif_index2name(nlif_handle, ifindex, name);
 }
+EXPORT_SYMBOL(nfq_get_physindev_name);
 
 /**
  * nfq_get_outdev_name - get the name of the physical interface the
@@ -1101,6 +1128,7 @@ int nfq_get_outdev_name(struct nlif_handle *nlif_handle,
 	u_int32_t ifindex = nfq_get_outdev(nfad);
 	return nlif_index2name(nlif_handle, ifindex, name);
 }
+EXPORT_SYMBOL(nfq_get_outdev_name);
 
 /**
  * nfq_get_physoutdev_name - get the name of the interface the
@@ -1121,6 +1149,7 @@ int nfq_get_physoutdev_name(struct nlif_handle *nlif_handle,
 	u_int32_t ifindex = nfq_get_physoutdev(nfad);
 	return nlif_index2name(nlif_handle, ifindex, name);
 }
+EXPORT_SYMBOL(nfq_get_physoutdev_name);
 
 /**
  * nfq_get_packet_hw
@@ -1149,6 +1178,7 @@ struct nfqnl_msg_packet_hw *nfq_get_packet_hw(struct nfq_data *nfad)
 	return nfnl_get_pointer_to_data(nfad->data, NFQA_HWADDR,
 					struct nfqnl_msg_packet_hw);
 }
+EXPORT_SYMBOL(nfq_get_packet_hw);
 
 /**
  * nfq_get_payload - get payload 
@@ -1170,6 +1200,7 @@ int nfq_get_payload(struct nfq_data *nfad, unsigned char **data)
 
 	return -1;
 }
+EXPORT_SYMBOL(nfq_get_payload);
 
 /**
  * @}
@@ -1356,6 +1387,7 @@ int nfq_snprintf_xml(char *buf, size_t rem, struct nfq_data *tb, int flags)
 
 	return len;
 }
+EXPORT_SYMBOL(nfq_snprintf_xml);
 
 /**
  * @}
