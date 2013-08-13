@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -50,7 +51,7 @@ static int queue_cb(const struct nlmsghdr *nlh, void *data)
 {
 	struct nfqnl_msg_packet_hdr *ph = NULL;
 	struct nlattr *attr[NFQA_MAX+1] = {};
-	uint32_t id = 0;
+	uint32_t id = 0, skbinfo;
 	struct nfgenmsg *nfg;
 	uint16_t plen;
 
@@ -71,9 +72,31 @@ static int queue_cb(const struct nlmsghdr *nlh, void *data)
 	plen = mnl_attr_get_payload_len(attr[NFQA_PAYLOAD]);
 	/* void *payload = mnl_attr_get_payload(attr[NFQA_PAYLOAD]); */
 
+	skbinfo = attr[NFQA_SKB_INFO] ? ntohl(mnl_attr_get_u32(attr[NFQA_SKB_INFO])) : 0;
+
+	if (attr[NFQA_CAP_LEN]) {
+		uint32_t orig_len = ntohl(mnl_attr_get_u32(attr[NFQA_CAP_LEN]));
+		if (orig_len != plen)
+			printf("truncated ");
+	}
+
+	if (skbinfo & NFQA_SKB_GSO)
+		printf("GSO ");
+
 	id = ntohl(ph->packet_id);
-	printf("packet received (id=%u hw=0x%04x hook=%u, payload len %u)\n",
+	printf("packet received (id=%u hw=0x%04x hook=%u, payload len %u",
 		id, ntohs(ph->hw_protocol), ph->hook, plen);
+
+	/*
+	 * ip/tcp checksums are not yet valid, e.g. due to GRO/GSO.
+	 * The application should behave as if the checksums are correct.
+	 *
+	 * If these packets are later forwarded/sent out, the checksums will
+	 * be corrected by kernel/hardware.
+	 */
+	if (skbinfo & NFQA_SKB_CSUMNOTREADY)
+		printf(", checksum not ready");
+	puts(")");
 
 	nfq_send_verdict(ntohs(nfg->res_id), id);
 
@@ -82,7 +105,9 @@ static int queue_cb(const struct nlmsghdr *nlh, void *data)
 
 int main(int argc, char *argv[])
 {
-	char buf[MNL_SOCKET_BUFFER_SIZE];
+	char *buf;
+	/* largest possible packet payload, plus netlink data overhead: */
+	size_t sizeof_buf = 0xffff + (MNL_SOCKET_BUFFER_SIZE/2);
 	struct nlmsghdr *nlh;
 	int ret;
 	unsigned int portid, queue_num;
@@ -104,6 +129,12 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 	portid = mnl_socket_get_portid(nl);
+
+	buf = malloc(sizeof_buf);
+	if (!buf) {
+		perror("allocate receive buffer");
+		exit(EXIT_FAILURE);
+	}
 
 	nlh = nfq_hdr_put(buf, NFQNL_MSG_CONFIG, 0);
 	nfq_nlmsg_cfg_put_cmd(nlh, AF_INET, NFQNL_CFG_CMD_PF_UNBIND);
@@ -132,26 +163,31 @@ int main(int argc, char *argv[])
 	nlh = nfq_hdr_put(buf, NFQNL_MSG_CONFIG, queue_num);
 	nfq_nlmsg_cfg_put_params(nlh, NFQNL_COPY_PACKET, 0xffff);
 
+	mnl_attr_put_u32(nlh, NFQA_CFG_FLAGS, htonl(NFQA_CFG_F_GSO));
+	mnl_attr_put_u32(nlh, NFQA_CFG_MASK, htonl(NFQA_CFG_F_GSO));
+
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
 		perror("mnl_socket_send");
 		exit(EXIT_FAILURE);
 	}
 
-	ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));
-	if (ret == -1) {
-		perror("mnl_socket_recvfrom");
-		exit(EXIT_FAILURE);
-	}
-	while (ret > 0) {
-		ret = mnl_cb_run(buf, ret, 0, portid, queue_cb, NULL);
-		if (ret < 0){
-			perror("mnl_cb_run");
+	/* ENOBUFS is signalled to userspace when packets were lost
+	 * on kernel side.  In most cases, userspace isn't interested
+	 * in this information, so turn it off.
+	 */
+	ret = 1;
+	mnl_socket_setsockopt(nl, NETLINK_NO_ENOBUFS, &ret, sizeof(int));
+
+	for (;;) {
+		ret = mnl_socket_recvfrom(nl, buf, sizeof_buf);
+		if (ret == -1) {
+			perror("mnl_socket_recvfrom");
 			exit(EXIT_FAILURE);
 		}
 
-		ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));
-		if (ret == -1) {
-			perror("mnl_socket_recvfrom");
+		ret = mnl_cb_run(buf, ret, 0, portid, queue_cb, NULL);
+		if (ret < 0){
+			perror("mnl_cb_run");
 			exit(EXIT_FAILURE);
 		}
 	}

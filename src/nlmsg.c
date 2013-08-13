@@ -132,6 +132,8 @@ static int nfq_pkt_parse_attr_cb(const struct nlattr *attr, void *data)
 	case NFQA_IFINDEX_OUTDEV:
 	case NFQA_IFINDEX_PHYSINDEV:
 	case NFQA_IFINDEX_PHYSOUTDEV:
+	case NFQA_CAP_LEN:
+	case NFQA_SKB_INFO:
 		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)
 			return MNL_CB_ERROR;
 		break;

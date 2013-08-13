@@ -640,6 +640,23 @@ int nfq_set_mode(struct nfq_q_handle *qh,
  * - NFQA_CFG_F_CONNTRACK (requires Linux kernel >= 3.6): the kernel will
  *   include the Connection Tracking system information.
  *
+ * - NFQA_CFG_F_GSO (requires Linux kernel >= 3.10): the kernel will
+ *   not normalize offload packets, i.e. your application will need to
+ *   be able to handle packets larger than the mtu (up to 64k).
+ *
+ *   If your application validates checksums (e.g., tcp checksum),
+ *   then you must also check if the NFQA_SKB_INFO attribute is present.
+ *   If it is, you need to test the NFQA_SKB_CSUMNOTREADY bit:
+ * \verbatim
+	if (attr[NFQA_SKB_INFO]) {
+		uint32_t info = ntohl(mnl_attr_get_u32(attr[NFQA_SKB_INFO]));
+		if (info & NFQA_SKB_CSUMNOTREADY)
+			validate_checksums = false;
+	}
+\endverbatim
+ *  if this bit is set, the layer 3/4 checksums of the packet appear incorrect,
+ *  but are not (because they will be corrected later by the kernel).
+ *
  * Here's a little code snippet to show how to use this API:
  * \verbatim
 	uint32_t flags = NFQA_CFG_F_FAIL_OPEN;
