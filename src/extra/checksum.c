@@ -20,7 +20,7 @@
 
 #include "internal.h"
 
-uint16_t checksum(uint32_t sum, uint16_t *buf, int size)
+uint16_t nfq_checksum(uint32_t sum, uint16_t *buf, int size)
 {
 	while (size > 1) {
 		sum += *buf++;
@@ -35,7 +35,7 @@ uint16_t checksum(uint32_t sum, uint16_t *buf, int size)
 	return (uint16_t)(~sum);
 }
 
-uint16_t checksum_tcpudp_ipv4(struct iphdr *iph)
+uint16_t nfq_checksum_tcpudp_ipv4(struct iphdr *iph)
 {
 	uint32_t sum = 0;
 	uint32_t iph_len = iph->ihl*4;
@@ -49,10 +49,10 @@ uint16_t checksum_tcpudp_ipv4(struct iphdr *iph)
 	sum += htons(IPPROTO_TCP);
 	sum += htons(len);
 
-	return checksum(sum, (uint16_t *)payload, len);
+	return nfq_checksum(sum, (uint16_t *)payload, len);
 }
 
-uint16_t checksum_tcpudp_ipv6(struct ip6_hdr *ip6h, void *transport_hdr)
+uint16_t nfq_checksum_tcpudp_ipv6(struct ip6_hdr *ip6h, void *transport_hdr)
 {
 	uint32_t sum = 0;
 	uint32_t hdr_len = (uint32_t *)transport_hdr - (uint32_t *)ip6h;
@@ -71,7 +71,7 @@ uint16_t checksum_tcpudp_ipv6(struct ip6_hdr *ip6h, void *transport_hdr)
 	sum += htons(IPPROTO_TCP);
 	sum += htons(ip6h->ip6_plen);
 
-	return checksum(sum, (uint16_t *)payload, len);
+	return nfq_checksum(sum, (uint16_t *)payload, len);
 }
 
 /**

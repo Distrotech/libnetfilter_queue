@@ -14,9 +14,9 @@
 struct iphdr;
 struct ip6_hdr;
 
-uint16_t checksum(uint32_t sum, uint16_t *buf, int size);
-uint16_t checksum_tcpudp_ipv4(struct iphdr *iph);
-uint16_t checksum_tcpudp_ipv6(struct ip6_hdr *ip6h, void *transport_hdr);
+uint16_t nfq_checksum(uint32_t sum, uint16_t *buf, int size);
+uint16_t nfq_checksum_tcpudp_ipv4(struct iphdr *iph);
+uint16_t nfq_checksum_tcpudp_ipv6(struct ip6_hdr *ip6h, void *transport_hdr);
 
 struct pkt_buff {
 	uint8_t *mac_header;

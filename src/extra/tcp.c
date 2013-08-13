@@ -91,7 +91,7 @@ nfq_tcp_compute_checksum_ipv4(struct tcphdr *tcph, struct iphdr *iph)
 {
 	/* checksum field in header needs to be zero for calculation. */
 	tcph->check = 0;
-	tcph->check = checksum_tcpudp_ipv4(iph);
+	tcph->check = nfq_checksum_tcpudp_ipv4(iph);
 }
 EXPORT_SYMBOL(nfq_tcp_compute_checksum_ipv4);
 
@@ -105,7 +105,7 @@ nfq_tcp_compute_checksum_ipv6(struct tcphdr *tcph, struct ip6_hdr *ip6h)
 {
 	/* checksum field in header needs to be zero for calculation. */
 	tcph->check = 0;
-	tcph->check = checksum_tcpudp_ipv6(ip6h, tcph);
+	tcph->check = nfq_checksum_tcpudp_ipv6(ip6h, tcph);
 }
 EXPORT_SYMBOL(nfq_tcp_compute_checksum_ipv6);
 

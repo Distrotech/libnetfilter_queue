@@ -85,7 +85,7 @@ void nfq_ip_set_checksum(struct iphdr *iph)
 	uint32_t iph_len = iph->ihl * 4;
 
 	iph->check = 0;
-	iph->check = checksum(0, (uint16_t *)iph, iph_len);
+	iph->check = nfq_checksum(0, (uint16_t *)iph, iph_len);
 }
 EXPORT_SYMBOL(nfq_ip_set_checksum);
 
