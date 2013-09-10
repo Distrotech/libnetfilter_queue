@@ -21,7 +21,7 @@ AC_PROG_INSTALL
 CHECK_GCC_FVISIBILITY
 
 case "$host" in
-*-*-linux*) ;;
+*-*-linux* | *-*-uclinux*) ;;
 *) AC_MSG_ERROR([Linux only, dude!]);;
 esac
 
