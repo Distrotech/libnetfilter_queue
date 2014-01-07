@@ -668,6 +668,9 @@ EXPORT_SYMBOL(nfq_set_mode);
  *  if this bit is set, the layer 3/4 checksums of the packet appear incorrect,
  *  but are not (because they will be corrected later by the kernel).
  *
+ *  - NFQA_CFG_F_UID_GID: the kernel will dump UID and GID of the socket to
+ *  which each packet belongs.
+ *
  * Here's a little code snippet to show how to use this API:
  * \verbatim
 	uint32_t flags = NFQA_CFG_F_FAIL_OPEN;
@@ -1181,6 +1184,38 @@ struct nfqnl_msg_packet_hw *nfq_get_packet_hw(struct nfq_data *nfad)
 EXPORT_SYMBOL(nfq_get_packet_hw);
 
 /**
+ * nfq_get_uid - get the UID of the user the packet belongs to
+ * \param nfad Netlink packet data handle passed to callback function
+ *
+ * \return 1 if there is a UID available, 0 otherwise.
+ */
+int nfq_get_uid(struct nfq_data *nfad, u_int32_t *uid)
+{
+	if (!nfnl_attr_present(nfad->data, NFQA_UID))
+		return 0;
+
+	*uid = ntohl(nfnl_get_data(nfad->data, NFQA_UID, u_int32_t));
+	return 1;
+}
+EXPORT_SYMBOL(nfq_get_uid);
+
+/**
+ * nfq_get_gid - get the GID of the user the packet belongs to
+ * \param nfad Netlink packet data handle passed to callback function
+ *
+ * \return 1 if there is a GID available, 0 otherwise.
+ */
+int nfq_get_gid(struct nfq_data *nfad, u_int32_t *gid)
+{
+	if (!nfnl_attr_present(nfad->data, NFQA_GID))
+		return 0;
+
+	*gid = ntohl(nfnl_get_data(nfad->data, NFQA_GID, u_int32_t));
+	return 1;
+}
+EXPORT_SYMBOL(nfq_get_gid);
+
+/**
  * nfq_get_payload - get payload 
  * \param nfad Netlink packet data handle passed to callback function
  * \param data Pointer of pointer that will be pointed to the payload
@@ -1250,6 +1285,7 @@ int nfq_snprintf_xml(char *buf, size_t rem, struct nfq_data *tb, int flags)
 	struct nfqnl_msg_packet_hdr *ph;
 	struct nfqnl_msg_packet_hw *hwph;
 	u_int32_t mark, ifi;
+	u_int32_t uid, gid;
 	int size, offset = 0, len = 0, ret;
 	unsigned char *data;
 
@@ -1362,6 +1398,16 @@ int nfq_snprintf_xml(char *buf, size_t rem, struct nfq_data *tb, int flags)
 	if (ifi && (flags & NFQ_XML_PHYSDEV)) {
 		size = snprintf(buf + offset, rem,
 				"<physoutdev>%u</physoutdev>", ifi);
+		SNPRINTF_FAILURE(size, rem, offset, len);
+	}
+
+	if (nfq_get_uid(tb, &uid) && (flags & NFQ_XML_UID)) {
+		size = snprintf(buf + offset, rem, "<uid>%u</uid>", uid);
+		SNPRINTF_FAILURE(size, rem, offset, len);
+	}
+
+	if (nfq_get_gid(tb, &gid) && (flags & NFQ_XML_GID)) {
+		size = snprintf(buf + offset, rem, "<gid>%u</gid>", gid);
 		SNPRINTF_FAILURE(size, rem, offset, len);
 	}
 

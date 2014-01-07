@@ -103,6 +103,8 @@ extern u_int32_t nfq_get_indev(struct nfq_data *nfad);
 extern u_int32_t nfq_get_physindev(struct nfq_data *nfad);
 extern u_int32_t nfq_get_outdev(struct nfq_data *nfad);
 extern u_int32_t nfq_get_physoutdev(struct nfq_data *nfad);
+extern int nfq_get_uid(struct nfq_data *nfad, u_int32_t *uid);
+extern int nfq_get_gid(struct nfq_data *nfad, u_int32_t *gid);
 
 extern int nfq_get_indev_name(struct nlif_handle *nlif_handle,
 			      struct nfq_data *nfad, char *name);
@@ -125,6 +127,8 @@ enum {
 	NFQ_XML_PHYSDEV	= (1 << 3),
 	NFQ_XML_PAYLOAD	= (1 << 4),
 	NFQ_XML_TIME	= (1 << 5),
+	NFQ_XML_UID	= (1 << 6),
+	NFQ_XML_GID	= (1 << 7),
 	NFQ_XML_ALL	= ~0U,
 };
 
