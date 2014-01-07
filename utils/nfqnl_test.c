@@ -15,7 +15,7 @@ static u_int32_t print_pkt (struct nfq_data *tb)
 	int id = 0;
 	struct nfqnl_msg_packet_hdr *ph;
 	struct nfqnl_msg_packet_hw *hwph;
-	u_int32_t mark,ifi; 
+	u_int32_t mark, ifi, uid, gid;
 	int ret;
 	unsigned char *data;
 
@@ -54,6 +54,12 @@ static u_int32_t print_pkt (struct nfq_data *tb)
 	ifi = nfq_get_physoutdev(tb);
 	if (ifi)
 		printf("physoutdev=%u ", ifi);
+
+	if (nfq_get_uid(tb, &uid))
+		printf("uid=%u ", uid);
+
+	if (nfq_get_gid(tb, &gid))
+		printf("gid=%u ", gid);
 
 	ret = nfq_get_payload(tb, &data);
 	if (ret >= 0)
@@ -113,6 +119,14 @@ int main(int argc, char **argv)
 		fprintf(stderr, "can't set packet_copy mode\n");
 		exit(1);
 	}
+
+	printf("setting flags to request UID and GID\n");
+	if (nfq_set_queue_flags(qh, NFQA_CFG_F_UID_GID, NFQA_CFG_F_UID_GID)) {
+		fprintf(stderr, "This kernel version does not allow to "
+				"retrieve process UID/GID.\n");
+	}
+
+	printf("Waiting for packets...\n");
 
 	fd = nfq_fd(h);
 
