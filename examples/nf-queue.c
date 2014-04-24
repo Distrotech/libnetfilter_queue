@@ -136,6 +136,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	/* PF_(UN)BIND is not needed with kernels 3.8 and later */
 	nlh = nfq_hdr_put(buf, NFQNL_MSG_CONFIG, 0);
 	nfq_nlmsg_cfg_put_cmd(nlh, AF_INET, NFQNL_CFG_CMD_PF_UNBIND);
 

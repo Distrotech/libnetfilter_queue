@@ -77,10 +77,13 @@ EXPORT_SYMBOL(nfq_nlmsg_verdict_put_pkt);
  *   subsystem is working.
  * - NFQNL_CFG_CMD_BIND: Binds the program to a specific queue.
  * - NFQNL_CFG_CMD_UNBIND: Unbinds the program to a specifiq queue.
+ *
+ * Obsolete commands:
  * - NFQNL_CFG_CMD_PF_BIND: Binds to process packets belonging to the given
  *   protocol family (ie. PF_INET, PF_INET6, etc).
  * - NFQNL_CFG_CMD_PF_UNBIND: Unbinds from processing packets belonging to the
- *   given protocol family.
+ *   given protocol family.  Both commands are ignored by Linux kernel 3.8 and
+ *   later versions.
  */
 void nfq_nlmsg_cfg_put_cmd(struct nlmsghdr *nlh, uint16_t pf, uint8_t cmd)
 {

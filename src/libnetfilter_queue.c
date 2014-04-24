@@ -455,8 +455,9 @@ EXPORT_SYMBOL(nfq_close);
  * \param h Netfilter queue connection handle obtained via call to nfq_open()
  * \param pf protocol family to bind to nfqueue handler obtained from nfq_open()
  *
- * Binds the given queue connection handle to process packets belonging to 
+ * Binds the given queue connection handle to process packets belonging to
  * the given protocol family (ie. PF_INET, PF_INET6, etc).
+ * This call is obsolete, Linux kernels from 3.8 onwards ignore it.
  *
  * \return integer inferior to 0 in case of failure
  */
@@ -473,6 +474,8 @@ EXPORT_SYMBOL(nfq_bind_pf);
  *
  * Unbinds the given queue connection handle from processing packets belonging
  * to the given protocol family.
+ *
+ * This call is obsolete, Linux kernels from 3.8 onwards ignore it.
  */
 int nfq_unbind_pf(struct nfq_handle *h, u_int16_t pf)
 {
