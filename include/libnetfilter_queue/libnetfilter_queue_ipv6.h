@@ -6,6 +6,6 @@ struct ip6_hdr;
 
 struct ip6_hdr *nfq_ip6_get_hdr(struct pkt_buff *pktb);
 int nfq_ip6_set_transport_header(struct pkt_buff *pktb, struct ip6_hdr *iph, uint8_t target);
-int nfq_ip6hdr_snprintf(char *buf, size_t size, const struct ip6_hdr *ip6h);
+int nfq_ip6_snprintf(char *buf, size_t size, const struct ip6_hdr *ip6h);
 
 #endif
