@@ -85,7 +85,16 @@ int main(int argc, char **argv)
 	struct nfq_q_handle *qh;
 	int fd;
 	int rv;
+	uint32_t queue = 0;
 	char buf[4096] __attribute__ ((aligned));
+
+	if (argc == 2) {
+		queue = atoi(argv[1]);
+		if (queue > 65535) {
+			fprintf(stderr, "Usage: %s [<0-65535>]\n", argv[0]);
+			exit(EXIT_FAILURE);
+		}
+	}
 
 	printf("opening library handle\n");
 	h = nfq_open();
@@ -106,8 +115,8 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	printf("binding this socket to queue '0'\n");
-	qh = nfq_create_queue(h,  0, &cb, NULL);
+	printf("binding this socket to queue '%d'\n", queue);
+	qh = nfq_create_queue(h, queue, &cb, NULL);
 	if (!qh) {
 		fprintf(stderr, "error during nfq_create_queue()\n");
 		exit(1);
