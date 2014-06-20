@@ -56,13 +56,17 @@ EXPORT_SYMBOL(nfq_udp_get_hdr);
  */
 void *nfq_udp_get_payload(struct udphdr *udph, struct pkt_buff *pktb)
 {
-	unsigned int doff = udph->len;
+	uint16_t len = ntohs(udph->len);
 
-	/* malformed UDP data offset. */
-	if (pktb->transport_header + doff > pktb->tail)
+	/* the UDP packet is too short. */
+	if (len < sizeof(struct udphdr))
 		return NULL;
 
-	return pktb->transport_header + doff;
+	/* malformed UDP packet. */
+	if (pktb->transport_header + len > pktb->tail)
+		return NULL;
+
+	return pktb->transport_header + sizeof(struct udphdr);
 }
 EXPORT_SYMBOL(nfq_udp_get_payload);
 
