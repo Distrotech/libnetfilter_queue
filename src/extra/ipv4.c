@@ -134,9 +134,13 @@ int nfq_ip_snprintf(char *buf, size_t size, const struct iphdr *iph)
 	struct in_addr src = { iph->saddr };
 	struct in_addr dst = { iph->daddr };
 
+	char src_str[INET_ADDRSTRLEN];
+	char dst_str[INET_ADDRSTRLEN];
+
 	ret = snprintf(buf, size, "SRC=%s DST=%s LEN=%u TOS=0x%X "
 				  "PREC=0x%X TTL=%u ID=%u PROTO=%u ",
-			inet_ntoa(src), inet_ntoa(dst),
+			inet_ntop(AF_INET, &src, src_str, INET_ADDRSTRLEN),
+			inet_ntop(AF_INET, &dst, dst_str, INET_ADDRSTRLEN),
 			ntohs(iph->tot_len), IPTOS_TOS(iph->tos),
 			IPTOS_PREC(iph->tos), iph->ttl, ntohs(iph->id),
 			iph->protocol);
