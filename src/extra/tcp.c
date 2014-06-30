@@ -59,13 +59,17 @@ EXPORT_SYMBOL(nfq_tcp_get_hdr);
  */
 void *nfq_tcp_get_payload(struct tcphdr *tcph, struct pkt_buff *pktb)
 {
-	unsigned int doff = tcph->doff * 4;
+	unsigned int len = tcph->doff * 4;
 
-	/* malformed TCP data offset. */
-	if (pktb->transport_header + doff >= pktb->tail)
+	/* TCP packet is too short */
+	if (len < sizeof(struct tcphdr))
 		return NULL;
 
-	return pktb->transport_header + doff;
+	/* malformed TCP data offset. */
+	if (pktb->transport_header + len > pktb->tail)
+		return NULL;
+
+	return pktb->transport_header + len;
 }
 EXPORT_SYMBOL(nfq_tcp_get_payload);
 
