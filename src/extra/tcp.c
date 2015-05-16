@@ -15,6 +15,7 @@
 #include <arpa/inet.h>
 #include <netinet/ip.h>
 #include <netinet/ip6.h>
+#define _GNU_SOURCE
 #include <netinet/tcp.h>
 
 #include <libnetfilter_queue/libnetfilter_queue.h>
