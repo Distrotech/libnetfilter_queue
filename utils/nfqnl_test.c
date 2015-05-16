@@ -10,12 +10,12 @@
 #include <libnetfilter_queue/libnetfilter_queue.h>
 
 /* returns packet id */
-static u_int32_t print_pkt (struct nfq_data *tb)
+static uint32_t print_pkt (struct nfq_data *tb)
 {
 	int id = 0;
 	struct nfqnl_msg_packet_hdr *ph;
 	struct nfqnl_msg_packet_hw *hwph;
-	u_int32_t mark, ifi, uid, gid;
+	uint32_t mark, ifi, uid, gid;
 	int ret;
 	unsigned char *data;
 
@@ -74,7 +74,7 @@ static u_int32_t print_pkt (struct nfq_data *tb)
 static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 	      struct nfq_data *nfa, void *data)
 {
-	u_int32_t id = print_pkt(nfa);
+	uint32_t id = print_pkt(nfa);
 	printf("entering callback\n");
 	return nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
 }

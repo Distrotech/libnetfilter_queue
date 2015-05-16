@@ -39,11 +39,11 @@ extern struct nfq_handle *nfq_open(void);
 extern struct nfq_handle *nfq_open_nfnl(struct nfnl_handle *nfnlh);
 extern int nfq_close(struct nfq_handle *h);
 
-extern int nfq_bind_pf(struct nfq_handle *h, u_int16_t pf);
-extern int nfq_unbind_pf(struct nfq_handle *h, u_int16_t pf);
+extern int nfq_bind_pf(struct nfq_handle *h, uint16_t pf);
+extern int nfq_unbind_pf(struct nfq_handle *h, uint16_t pf);
 
 extern struct nfq_q_handle *nfq_create_queue(struct nfq_handle *h,
-			      			 u_int16_t num,
+						 uint16_t num,
 						 nfq_callback *cb,
 						 void *data);
 extern int nfq_destroy_queue(struct nfq_q_handle *qh);
@@ -51,42 +51,42 @@ extern int nfq_destroy_queue(struct nfq_q_handle *qh);
 extern int nfq_handle_packet(struct nfq_handle *h, char *buf, int len);
 
 extern int nfq_set_mode(struct nfq_q_handle *qh,
-			  u_int8_t mode, unsigned int len);
+			  uint8_t mode, unsigned int len);
 
 int nfq_set_queue_maxlen(struct nfq_q_handle *qh,
-			u_int32_t queuelen);
+			uint32_t queuelen);
 
 extern int nfq_set_queue_flags(struct nfq_q_handle *qh,
 			       uint32_t mask, uint32_t flags);
 
 extern int nfq_set_verdict(struct nfq_q_handle *qh,
-			     u_int32_t id,
-			     u_int32_t verdict,
-			     u_int32_t data_len,
+			     uint32_t id,
+			     uint32_t verdict,
+			     uint32_t data_len,
 			     const unsigned char *buf);
 
 extern int nfq_set_verdict2(struct nfq_q_handle *qh,
-			    u_int32_t id,
-			    u_int32_t verdict, 
-			    u_int32_t mark,
-			    u_int32_t datalen,
+			    uint32_t id,
+			    uint32_t verdict,
+			    uint32_t mark,
+			    uint32_t datalen,
 			    const unsigned char *buf);
 
 extern int nfq_set_verdict_batch(struct nfq_q_handle *qh,
-			    u_int32_t id,
-			    u_int32_t verdict);
+			    uint32_t id,
+			    uint32_t verdict);
 
 extern int nfq_set_verdict_batch2(struct nfq_q_handle *qh,
-			    u_int32_t id,
-			    u_int32_t verdict,
-			    u_int32_t mark);
+			    uint32_t id,
+			    uint32_t verdict,
+			    uint32_t mark);
 
 extern __attribute__((deprecated))
 int nfq_set_verdict_mark(struct nfq_q_handle *qh, 
-			 u_int32_t id,
-			 u_int32_t verdict, 
-			 u_int32_t mark,
-			 u_int32_t datalen,
+			 uint32_t id,
+			 uint32_t verdict,
+			 uint32_t mark,
+			 uint32_t datalen,
 			 const unsigned char *buf);
 
 /* message parsing function */
@@ -94,17 +94,17 @@ int nfq_set_verdict_mark(struct nfq_q_handle *qh,
 extern struct nfqnl_msg_packet_hdr *
 				nfq_get_msg_packet_hdr(struct nfq_data *nfad);
 
-extern u_int32_t nfq_get_nfmark(struct nfq_data *nfad);
+extern uint32_t nfq_get_nfmark(struct nfq_data *nfad);
 
 extern int nfq_get_timestamp(struct nfq_data *nfad, struct timeval *tv);
 
 /* return 0 if not set */
-extern u_int32_t nfq_get_indev(struct nfq_data *nfad);
-extern u_int32_t nfq_get_physindev(struct nfq_data *nfad);
-extern u_int32_t nfq_get_outdev(struct nfq_data *nfad);
-extern u_int32_t nfq_get_physoutdev(struct nfq_data *nfad);
-extern int nfq_get_uid(struct nfq_data *nfad, u_int32_t *uid);
-extern int nfq_get_gid(struct nfq_data *nfad, u_int32_t *gid);
+extern uint32_t nfq_get_indev(struct nfq_data *nfad);
+extern uint32_t nfq_get_physindev(struct nfq_data *nfad);
+extern uint32_t nfq_get_outdev(struct nfq_data *nfad);
+extern uint32_t nfq_get_physoutdev(struct nfq_data *nfad);
+extern int nfq_get_uid(struct nfq_data *nfad, uint32_t *uid);
+extern int nfq_get_gid(struct nfq_data *nfad, uint32_t *gid);
 
 extern int nfq_get_indev_name(struct nlif_handle *nlif_handle,
 			      struct nfq_data *nfad, char *name);
