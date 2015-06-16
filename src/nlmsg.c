@@ -137,6 +137,7 @@ static int nfq_pkt_parse_attr_cb(const struct nlattr *attr, void *data)
 	case NFQA_IFINDEX_PHYSOUTDEV:
 	case NFQA_CAP_LEN:
 	case NFQA_SKB_INFO:
+	case NFQA_SECCTX:
 	case NFQA_UID:
 	case NFQA_GID:
 		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)

@@ -1218,6 +1218,29 @@ int nfq_get_gid(struct nfq_data *nfad, uint32_t *gid)
 }
 EXPORT_SYMBOL(nfq_get_gid);
 
+
+/**
+ * nfq_get_secctx - get the security context for this packet
+ * \param nfad Netlink packet data handle passed to callback function
+ * \param secdata data to write the security context to
+ *
+ * \return -1 on error, otherwise > 0
+ */
+int nfq_get_secctx(struct nfq_data *nfad, unsigned char **secdata)
+{
+	if (!nfnl_attr_present(nfad->data, NFQA_SECCTX))
+		return -1;
+
+	*secdata = (unsigned char *)nfnl_get_pointer_to_data(nfad->data,
+							NFQA_SECCTX, char);
+
+	if (*secdata)
+		return NFA_PAYLOAD(nfad->data[NFQA_SECCTX-1]);
+
+	return 0;
+}
+EXPORT_SYMBOL(nfq_get_secctx);
+
 /**
  * nfq_get_payload - get payload 
  * \param nfad Netlink packet data handle passed to callback function

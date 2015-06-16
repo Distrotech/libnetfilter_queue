@@ -17,7 +17,7 @@ static uint32_t print_pkt (struct nfq_data *tb)
 	struct nfqnl_msg_packet_hw *hwph;
 	uint32_t mark, ifi, uid, gid;
 	int ret;
-	unsigned char *data;
+	unsigned char *data, *secdata;
 
 	ph = nfq_get_msg_packet_hdr(tb);
 	if (ph) {
@@ -60,6 +60,10 @@ static uint32_t print_pkt (struct nfq_data *tb)
 
 	if (nfq_get_gid(tb, &gid))
 		printf("gid=%u ", gid);
+
+	ret = nfq_get_secctx(tb, &secdata);
+	if (ret > 0)
+		printf("secctx=\"%.*s\" ", ret, secdata);
 
 	ret = nfq_get_payload(tb, &data);
 	if (ret >= 0)
@@ -132,6 +136,12 @@ int main(int argc, char **argv)
 	if (nfq_set_queue_flags(qh, NFQA_CFG_F_UID_GID, NFQA_CFG_F_UID_GID)) {
 		fprintf(stderr, "This kernel version does not allow to "
 				"retrieve process UID/GID.\n");
+	}
+
+	printf("setting flags to request security context\n");
+	if (nfq_set_queue_flags(qh, NFQA_CFG_F_SECCTX, NFQA_CFG_F_SECCTX)) {
+		fprintf(stderr, "This kernel version does not allow to "
+				"retrieve security context.\n");
 	}
 
 	printf("Waiting for packets...\n");
